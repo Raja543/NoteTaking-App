@@ -6,8 +6,22 @@ require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const authRoute = require("./Routes/AuthRoute");
 const taskRoutes = require("./Routes/TaskRoute");
-const eventRoutes = require('./Routes/EventRoute');
+const eventRoutes = require("./Routes/EventRoute");
 const { MONGO_URL, PORT } = process.env;
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
+
+app.use("/", authRoute);
+app.use("/api", taskRoutes);
+app.use("/api/events", eventRoutes);
 
 mongoose
   .connect(MONGO_URL, {
@@ -20,20 +34,3 @@ mongoose
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
-
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
-app.use(cookieParser());
-
-app.use(express.json());
-
-app.use("/", authRoute);
-
-app.use('/api/tasks', taskRoutes);
-
-app.use('/api/events', eventRoutes);
